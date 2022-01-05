@@ -1,0 +1,14 @@
+version: '3.8'
+
+
+services:
+  anysimulation:
+    build: .
+    container_name: any-simulation
+    restart: unless-stopped
+    volumes:
+      - ./hoverfly:/var/hoverfly
+    ports: 
+      - 8500:8500
+      - 8888:8888
+
