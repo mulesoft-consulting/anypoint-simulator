@@ -1,0 +1,4855 @@
+{
+	"info": {
+		"_postman_id": "f47bec31-0903-4a4f-b760-6f30665c2ef1",
+		"name": "Anypoint Simulator Feed",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "get Connected App  token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson.access_token).to.be.not.empty;",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.environment.set('anypoint_access_token', responseJson.access_token)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"app credentials not empty\", () => {",
+									"    const client_id = pm.environment.get(\"app-client-id\");",
+									"    const client_secret = pm.environment.get(\"app-client-secret\");",
+									"    pm.expect(client_id).to.not.be.empty;",
+									"    pm.expect(client_secret).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{app-client-id}}\",\n  \"client_secret\": \"{{app-client-secret}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/v2/oauth2/token",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"v2",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User/Pwd login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson.access_token).to.be.not.empty;",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.environment.set('anypoint_access_token', responseJson.access_token)",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"user credentials not empty\", () => {",
+									"    const username = pm.environment.get(\"username\");",
+									"    const password = pm.environment.get(\"password\");",
+									"    pm.expect(username).to.not.be.empty;",
+									"    pm.expect(password).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "VPC",
+			"item": [
+				{
+					"name": "get vpcs",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{anypoint_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/cloudhub/api/organizations/:orgId/vpcs",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cloudhub",
+								"api",
+								"organizations",
+								":orgId",
+								"vpcs"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post vpc",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson).to.be.an('object');",
+									"    pm.expect(responseJson.id).to.be.a('string');",
+									"});",
+									"",
+									"if(pm.response.code >= 200 && pm.response.code < 400) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('vpc_id', responseJson.id)",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{anypoint_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"simulationTestVPC\",\n  \"region\": \"us-east-1\",\n  \"cidrBlock\": \"192.168.1.0/24\",\n  \"internalDns\": {\n    \"dnsServers\": [],\n    \"specialDomains\": []\n  },\n  \"isDefault\": false,\n  \"associatedEnvironments\": [],\n  \"sharedWith\": [],\n  \"firewallRules\": [\n    {\n      \"cidrBlock\": \"0.0.0.0/0\",\n      \"protocol\": \"tcp\",\n      \"fromPort\": 8081,\n      \"toPort\": 8082\n    },\n    {\n      \"cidrBlock\": \"192.168.1.0/24\",\n      \"protocol\": \"tcp\",\n      \"fromPort\": 8091,\n      \"toPort\": 8092\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/cloudhub/api/organizations/:orgId/vpcs",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cloudhub",
+								"api",
+								"organizations",
+								":orgId",
+								"vpcs"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get vpc by id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"vpc id not empty\", () => {",
+									"    const vpc_id = pm.environment.get(\"vpc_id\");",
+									"    pm.expect(vpc_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{anypoint_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/cloudhub/api/organizations/:orgId/vpcs/:vpcId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cloudhub",
+								"api",
+								"organizations",
+								":orgId",
+								"vpcs",
+								":vpcId"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "vpcId",
+									"value": "{{vpc_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update vpc by id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"vpc id not empty\", () => {",
+									"    const vpc_id = pm.environment.get(\"vpc_id\");",
+									"    pm.expect(vpc_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{anypoint_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"myTestVPC\",\n  \"region\": \"us-east-1\",\n  \"cidrBlock\": \"192.168.1.0/24\",\n  \"internalDns\": {\n    \"dnsServers\": [],\n    \"specialDomains\": []\n  },\n  \"isDefault\": false,\n  \"associatedEnvironments\": [],\n  \"sharedWith\": [],\n  \"firewallRules\": [\n    {\n      \"cidrBlock\": \"0.0.0.0/0\",\n      \"protocol\": \"tcp\",\n      \"fromPort\": 8081,\n      \"toPort\": 8082\n    },\n    {\n      \"cidrBlock\": \"192.168.1.0/24\",\n      \"protocol\": \"tcp\",\n      \"fromPort\": 8091,\n      \"toPort\": 8092\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/cloudhub/api/organizations/:orgId/vpcs/:vpcId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cloudhub",
+								"api",
+								"organizations",
+								":orgId",
+								"vpcs",
+								":vpcId"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "vpcId",
+									"value": "{{vpc_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete vpc by id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"vpc id not empty\", () => {",
+									"    const vpc_id = pm.environment.get(\"vpc_id\");",
+									"    pm.expect(vpc_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.expect(pm.response.code).to.eql(204);",
+									"});",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    pm.environment.set('vpc_id', undefined)",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{anypoint_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/cloudhub/api/organizations/:orgId/vpcs/:vpcId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cloudhub",
+								"api",
+								"organizations",
+								":orgId",
+								"vpcs",
+								":vpcId"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "vpcId",
+									"value": "{{vpc_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"org id not empty\", () => {",
+							"    const org_id = pm.environment.get(\"organization_id\");",
+							"    pm.expect(org_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"access token not empty\", () => {",
+							"    const token = pm.environment.get(\"anypoint_access_token\");",
+							"    pm.expect(token).to.not.be.empty;",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Org",
+			"item": [
+				{
+					"name": "Org",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson).to.be.an('object');",
+									"    pm.expect(responseJson.id).to.be.a('string');",
+									"});",
+									"",
+									"if(pm.response.code >= 200 && pm.response.code < 400) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('suborg_id', responseJson.id)",
+									"}",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"SimulationTest\",\n    \"parentOrganizationId\": \"{{organization_id}}\",\n    \"ownerId\": \"{{owner_id}}\",\n    \"entitlements\": {\n        \"createSubOrgs\": true,\n        \"createEnvironments\": true,\n        \"globalDeployment\": false,\n        \"vCoresProduction\": {\n            \"assigned\": 0.2\n        },\n        \"vCoresSandbox\": {\n            \"assigned\": 0.2\n        },\n        \"vCoresDesign\": {\n            \"assigned\": 0.1\n        },\n        \"staticIps\": {\n            \"assigned\": 1\n        },\n        \"vpcs\": {\n            \"assigned\": 0\n        },\n        \"loadBalancer\": {\n            \"assigned\": 0\n        },\n        \"vpns\": {\n            \"assigned\": 0\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Org By ID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"suborg id not empty\", () => {",
+									"    const suborg_id = pm.environment.get(\"suborg_id\");",
+									"    pm.expect(suborg_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgid",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgid"
+							],
+							"variable": [
+								{
+									"key": "orgid",
+									"value": "{{suborg_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Org members",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"suborg id not empty\", () => {",
+									"    const suborg_id = pm.environment.get(\"suborg_id\");",
+									"    pm.expect(suborg_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/members",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"members"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{suborg_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Org",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"suborg id not empty\", () => {",
+									"    const suborg_id = pm.environment.get(\"suborg_id\");",
+									"    pm.expect(suborg_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Simulation_UpdatedName\",\n    \"parentOrganizationId\": \"{{organization_id-cat}}\",\n    \"ownerId\": \"{{owner_id}}\",\n    \"entitlements\": {\n        \"createSubOrgs\": true,\n        \"createEnvironments\": true,\n        \"globalDeployment\": false,\n        \"vCoresProduction\": {\n            \"assigned\": 0.2\n        },\n        \"vCoresSandbox\": {\n            \"assigned\": 0.2\n        },\n        \"vCoresDesign\": {\n            \"assigned\": 0.1\n        },\n        \"staticIps\": {\n            \"assigned\": 1\n        },\n        \"vpcs\": {\n            \"assigned\": 0\n        },\n        \"loadBalancer\": {\n            \"assigned\": 0\n        },\n        \"vpns\": {\n            \"assigned\": 0\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{suborg_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Org",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"suborg id not empty\", () => {",
+									"    const suborg_id = pm.environment.get(\"suborg_id\");",
+									"    pm.expect(suborg_id).to.not.be.empty;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.expect(pm.response.code).to.eql(204);",
+									"});",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    pm.environment.set('suborg_id', undefined)",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgid",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgid"
+							],
+							"variable": [
+								{
+									"key": "orgid",
+									"value": "{{suborg_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"org id not empty\", () => {",
+							"    const org_id = pm.environment.get(\"organization_id\");",
+							"    pm.expect(org_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"access token not empty\", () => {",
+							"    const token = pm.environment.get(\"anypoint_access_token\");",
+							"    pm.expect(token).to.not.be.empty;",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Environment",
+			"item": [
+				{
+					"name": "get ENVs",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{anypoint_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/environments",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"environments"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create ENV",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson.id).to.not.be.empty;",
+									"});",
+									"",
+									"if(pm.response.code >= 200 && pm.response.code < 400) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('env_id', responseJson.id);",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{anypoint_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n \"name\": \"simulation-env-id\",\n \"type\": \"sandbox\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/environments",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"environments"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get ENV",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"env id not empty\", () => {",
+									"    const env_id = pm.environment.get(\"env_id\");",
+									"    pm.expect(env_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{anypoint_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/environments/:envId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"environments",
+								":envId"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "envId",
+									"value": "{{env_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update ENV",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"env id not empty\", () => {",
+									"    const env_id = pm.environment.get(\"env_id\");",
+									"    pm.expect(env_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{anypoint_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n \"name\": \"simulation-env-id\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/environments/:envId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"environments",
+								":envId"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "envId",
+									"value": "{{env_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete ENV",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"env id not empty\", () => {",
+									"    const env_id = pm.environment.get(\"env_id\");",
+									"    pm.expect(env_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.expect(pm.response.code).to.eql(204);",
+									"});",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    pm.environment.set('env_id', undefined);",
+									"}",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{anypoint_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/environments/:envId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"environments",
+								":envId"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "envId",
+									"value": "{{env_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"org id not empty\", () => {",
+							"    const org_id = pm.environment.get(\"organization_id\");",
+							"    pm.expect(org_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"access token not empty\", () => {",
+							"    const token = pm.environment.get(\"anypoint_access_token\");",
+							"    pm.expect(token).to.not.be.empty;",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "DLB",
+			"item": [
+				{
+					"name": "get DLBs",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const vpc_id = pm.environment.get('vpc_id')",
+									"",
+									"if (vpc_id) {",
+									"    return",
+									"}",
+									"",
+									"const ts = (new Date()).getTime()",
+									"const url = pm.environment.get(\"url\")",
+									"const org_id = pm.environment.get(\"organization_id\")",
+									"const token = pm.environment.get(\"anypoint_access_token\")",
+									"",
+									"pm.sendRequest({",
+									"    url:  `${url}/cloudhub/api/organizations/${org_id}/vpcs`,",
+									"    method: 'POST',",
+									"    header: {",
+									"        'Authorization': `Bearer ${token}`,",
+									"        'Content-Type': 'application/json' ",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            name: `simulation_vpc4dlb_${ts}`,",
+									"            region: \"us-east-1\",",
+									"            cidrBlock: \"192.168.1.0/24\",",
+									"        })",
+									"    }",
+									"}, (err, res) => {",
+									"    pm.test('no error when creating the vpc', () => {",
+									"        pm.expect(err).to.not.be.an('error');",
+									"        pm.expect(res.code).to.be.eqls(200);",
+									"        const json = res.json();",
+									"        pm.expect(json.id).not.to.be.undefined; ",
+									"    })",
+									"    if (err) {",
+									"        console.error('Error while creating vpc:', err);",
+									"        return;",
+									"    }",
+									"    const responseJson = res.json();",
+									"    if(responseJson.id) {",
+									"        pm.environment.set('vpc_id', responseJson.id)",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/cloudhub/api/organizations/:orgId/vpcs/:vpc/loadbalancers",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cloudhub",
+								"api",
+								"organizations",
+								":orgId",
+								"vpcs",
+								":vpc",
+								"loadbalancers"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "vpc",
+									"value": "{{vpc_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create DLB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(201);",
+									"    pm.expect(responseJson).to.be.an('object');",
+									"    pm.expect(responseJson.id).to.be.a('string');",
+									"});",
+									"",
+									"",
+									"if(pm.response.code >= 200 && pm.response.code < 400) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('dlb_id', responseJson.id)",
+									"}",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"vpc id not empty\", () => {",
+									"    const vpc_id = pm.environment.get(\"vpc_id\");",
+									"    pm.expect(vpc_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"simulation_dlb_{{$timestamp}}\",\n  \"ipWhitelist\": [],\n  \"httpMode\": \"redirect\",\n  \"defaultSslEndpoint\": 0,\n  \"tlsv1\": false,\n  \"sslEndpoints\": [{\n    \"publicKey\": \"-----BEGIN CERTIFICATE-----\\nMIICpDCCAYwCCQCOpE/9k0ve8zANBgkqhkiG9w0BAQsFADAUMRIwEAYDVQQDDAls\\nb2NhbGhvc3QwHhcNMjEwMzA1MTUyMTM1WhcNMjEwMzA2MTUyMTM1WjAUMRIwEAYD\\nVQQDDAlsb2NhbGhvc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDK\\n93gvOvMrcyVUvPnzC2UtXzHnV+rxW8I6VM+lFASV2FS+oZtiNGCFlbeEEMCImtAx\\npaBw8/GTX5qNshFYNkGkvM4uh2PxYPZXfhOhkO42R6zdL89yTkY7E6nT/HwDUVAC\\njJw67Y88St9h8yN5OOU95V3qkCbqfGxpKXnxmzTQt8aDRZQz5juQazVjMo4lIEpB\\nuTPbXHRnHJCyr0OBOcGAGBTq2d7z2mFFlE+5w7RIiPNtx5KvG7wfO6KrCwfUGU5j\\nl8466kfniqydGbxH7dsR+daPWAHrTCmZND7AWSiptIVzoJ/Q3QgT/qK8/SmpW9Hf\\nDJQffO+I5y+w6y5cU1l3AgMBAAEwDQYJKoZIhvcNAQELBQADggEBAGS1mTWes3za\\nWGlubGf76TiSn8GjIO7jIeVxBeB6rYq6iUFLUfEPCNHSlA0g7JJ40KW/osPc6EEm\\nQzptRdhAoRDM5ilRTVMvuoGflw04OqrSUqR26+7aVJ8JcBJWBeP/5kGaMjPhy7oX\\ntYPwzK2wXDYLDUCLXefF59NQoHUtytritckT5tP0UYDcRf2upBxn/v9lbF7AVfLZ\\nO/vGplnD8Kq4QaFGL26ioh7e/n9TldbDJnspHh389aG6nqOKIgnL785Ggr6914vH\\n4AMJa3r9cYpoe9ZdXL6b3aW+9MQo2Th2hDc7Z4CfVzJTZ9mg3ouKxIYGj+B4bj61\\nN+MUQ5Q7aCo=\\n-----END CERTIFICATE-----\",\n    \"privateKey\": \"-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDK93gvOvMrcyVU\\nvPnzC2UtXzHnV+rxW8I6VM+lFASV2FS+oZtiNGCFlbeEEMCImtAxpaBw8/GTX5qN\\nshFYNkGkvM4uh2PxYPZXfhOhkO42R6zdL89yTkY7E6nT/HwDUVACjJw67Y88St9h\\n8yN5OOU95V3qkCbqfGxpKXnxmzTQt8aDRZQz5juQazVjMo4lIEpBuTPbXHRnHJCy\\nr0OBOcGAGBTq2d7z2mFFlE+5w7RIiPNtx5KvG7wfO6KrCwfUGU5jl8466kfniqyd\\nGbxH7dsR+daPWAHrTCmZND7AWSiptIVzoJ/Q3QgT/qK8/SmpW9HfDJQffO+I5y+w\\n6y5cU1l3AgMBAAECggEAe0TfZnf8FiiBxLxdZeJG2c6WJXY9B8d96CV4Uz8cJdHU\\nbk8Caxt6f8dVRM1T0eOMjIqWLePKlYIcAPDkHdod9iqBYrrx1TjZhHva+mZmdusD\\nLvcJm9e0Sc8AdvJCc1VgLZwuio+bTbf/gaLEqawHdpcmef6A1CsrQJdjK3zjD9tn\\n45wk+S6lRoCdGvFXk8L/mZPhhktzTRA4GKODKKzfXtMPXpjzj9sY500KwnjBDsNW\\nxg7acYA2NbvdZqStGWP3O56gpttH8Ye9JbYCwIFYiPq9KnXJMYYb/k1/qSI4LNPX\\nSuv0xmj6QNnRh3sfPHIynd+iKIm0qvqpBl2Chg9UeQKBgQD2peuK8iuvl2P61d5V\\nR5RlyjTMKL9f1Pm5Q+vhcD2q2Ubow4iQWUyMwMFHIxvscSDkD8+sneOz85WHfZx9\\nOK8oX3MHHDkkWxs6lJBnHBayFHtbuiI0LfJzSGGio672rEmS3A7g8ZDx06QczaD5\\nhVhaR1Z7z9PfHW2rBOOJFEjl6wKBgQDSqY6kvYwet4kCdTUTnMuJuZ5u85Yn8jjU\\nlZgAsizYwvWWXlUEYIKlosOfc/j1NQejqoVDgsQSFqfHDEG4gnClnEXi5tBg+OhX\\n/rolaak+fuJ/dLj0RrkAJGvymDsf6qZoXtV6winO6Y7D5vtcaaWBo3DqaD4+28n3\\nM1/m3I47pQKBgBkueWzXKrSjrTZ3zVpBk5oM2fUaF+fN060hjRyYHAOsaTvscq3i\\nIBmiuFjt8bTjG+uM3bQO7qd5sAOERIzYU7G4hQLt07utfYsujcupJ3wI8Us9Jq7T\\nHhS9CBLVyVAv6NcQlohKwXSfGftC1zOCdLHK5L6BSm1WENNMDXr6UjL/AoGAWKwq\\ncMmga2WR9EjluIWtXyGUwNsjf1kD9ueo/dIB8pPN0CeQ3bDKDXJ/qWSljIFv38Jt\\nKcenRH3ozW4pU8MEK5GmESZa3BappjCApjLdnILIUCIPoDMMuDScg5b0fDDHLvOM\\nJIoKEyBYibl2YKXPlsv3QZPzb34Qe09StNhtvkkCgYEA2tOGGyiqcjG1fDhvdYvf\\nbpja2/7OetClQKmjQJRLECRkJmEJk/mpOruyFn9cg/4wPBVi2AqMCqG/KyTzuImT\\nY/kqPJ+UmYLBDnxIXzff/6nUjuxTZXgcdtnlaK/xq2HoU3XsCyHjOcaCjIUSLQsx\\neb6YXmFBGK62BISiWmm3aPQ=\\n-----END PRIVATE KEY-----\",\n    \"verifyClientMode\": \"off\",\n    \"mappings\": [{\n      \"inputUri\": \"{app}/\",\n      \"appName\": \"{app}\",\n      \"appUri\": \"/\"\n    }]\n }]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/cloudhub/api/organizations/:orgId/vpcs/:vpc/loadbalancers",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cloudhub",
+								"api",
+								"organizations",
+								":orgId",
+								"vpcs",
+								":vpc",
+								"loadbalancers"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "vpc",
+									"value": "{{vpc_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get DLB by id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"vpc id not empty\", () => {",
+									"    const vpc_id = pm.environment.get(\"vpc_id\");",
+									"    pm.expect(vpc_id).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"dlb id not empty\", () => {",
+									"    const dlb_id = pm.environment.get(\"dlb_id\");",
+									"    pm.expect(dlb_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson).to.be.an('object');",
+									"    pm.expect(responseJson.id).to.be.a('string');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/cloudhub/api/organizations/:orgId/vpcs/:vpc/loadbalancers/:dlbid",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cloudhub",
+								"api",
+								"organizations",
+								":orgId",
+								"vpcs",
+								":vpc",
+								"loadbalancers",
+								":dlbid"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "vpc",
+									"value": "{{vpc_id}}"
+								},
+								{
+									"key": "dlbid",
+									"value": "{{dlb_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update DLB",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"vpc id not empty\", () => {",
+									"    const vpc_id = pm.environment.get(\"vpc_id\");",
+									"    pm.expect(vpc_id).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"dlb id not empty\", () => {",
+									"    const dlb_id = pm.environment.get(\"dlb_id\");",
+									"    pm.expect(dlb_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson).to.be.an('object');",
+									"    pm.expect(responseJson.id).to.be.a('string');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/state\",\n        \"value\": \"STARTED\"\n    }, {\n        \"op\": \"replace\",\n        \"path\": \"/sslEndpoints/0\",\n        \"value\": {\n            \"publicKey\": \"-----BEGIN CERTIFICATE-----\\nMIICzjCCAbYCCQDFKFq3xnilWTANBgkqhkiG9w0BAQsFADApMScwJQYDVQQDDB5h\\nd2Vzb21lX3NhYi5sYi5hbnlwb2ludGRucy5uZXQwHhcNMjEwMzA1MTYyNDExWhcN\\nMjEwMzA2MTYyNDExWjApMScwJQYDVQQDDB5hd2Vzb21lX3NhYi5sYi5hbnlwb2lu\\ndGRucy5uZXQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDLv9TZ9XZO\\n4jYQijctwVE7hoZSm2kf8uFD3Z4NnV2tpH0Ntd/f0ig6dONC2NPP/zEeKFeyAf+X\\nvcg4gfd6aGOEgQIKIu7OVJHVAFMnwl6qi6I2Jh2jM1ttgDj4GKFZ6797WR9ym+mp\\nKd39NGoVApGL1GeVjnrTUk2YOA+ck+I1OxXsej8GL/DfLJ6Y+sNyV/3t5JNRfQZ7\\nRiX2XdncztSsVi5hvoV2AihHmy/IKPY3Z/oqjW7/BNsOBXi+3ITDpLXBMR5qEemp\\nLWLH1wOwvpVDnw+drj21x8793Gu33aBRMlae3MCi08OL8Hg2kUYSnnDmrkswsLPG\\nejUQVxstNMnTAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAIFYW/DlAcBL5FkcyKi2\\nKqxoMkGsi2WrU/Xwu76FnvD5LolUicZcmjdaB/8xrypLfYEBV8ApiQXhln499woJ\\nFi5Xr1YV4fKjmzQF+G47XuqH0AV1o0/w1+5z4JpxTYPQHZlH5frp01DMQGY5/gay\\nVirB1KOxZgdZPmGvnkctrQiszgzOeKOyNpbcFPkFAIHfxcv6N4Ln/4n88Ho0fI4p\\ngrjhH3rPS+NcxaRJSIUYD5EOnRsJExGYeSkc22tUbAC2iEn5HegbdDfFePKrmvxQ\\nOtrNXDEfNPMucwHGgEdUS4CdYCbHw4JoV6qIc48x+8tPtDizeVdqTdLNXNcpwri1\\ns+k=\\n-----END CERTIFICATE-----\",\n            \"privateKey\": \"-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDLv9TZ9XZO4jYQ\\nijctwVE7hoZSm2kf8uFD3Z4NnV2tpH0Ntd/f0ig6dONC2NPP/zEeKFeyAf+Xvcg4\\ngfd6aGOEgQIKIu7OVJHVAFMnwl6qi6I2Jh2jM1ttgDj4GKFZ6797WR9ym+mpKd39\\nNGoVApGL1GeVjnrTUk2YOA+ck+I1OxXsej8GL/DfLJ6Y+sNyV/3t5JNRfQZ7RiX2\\nXdncztSsVi5hvoV2AihHmy/IKPY3Z/oqjW7/BNsOBXi+3ITDpLXBMR5qEempLWLH\\n1wOwvpVDnw+drj21x8793Gu33aBRMlae3MCi08OL8Hg2kUYSnnDmrkswsLPGejUQ\\nVxstNMnTAgMBAAECggEAI/Uw7V5iiL1naTfbURni6ixtnDqNLPRCSSXddO2m0LRM\\n1ZSZc/i03MwwJ2X4y6Zv1rCr+WBc6Ty3DzHwqQuvNH1IDN3pY0SNkBfElSm6Z0LJ\\nV+EWLe0sX4DXjQFbyHDQlEZARIu7iv02ji8n4ZlYcmMD/OLuTkkiJJEQQEPhEh+Q\\nPAuWeLWjGoiPeadSl0mH24WNRCiby+Aj0tQq1ua5ls2XyelVRB/pxp0ZgJbKWl2N\\nL1pDRnNyqviOza4ftYPOHvqhdssl8jMyV3I9RcURO/6aL0F49NAOYZeQpCXmm0sQ\\nxJCHMRP4D/8ReHmzX7NoUSxCCLrBnZ3fN4kQ8WEJkQKBgQD/S3psXa9gSpZK6YLY\\nImz+AMF2+2mphCZWp2GvhxABCUEvtNtFKjFsPuJ6mXNHLNqtRnZjBAUR6RHc54W5\\nGVBU6by1A5Wrl/Bt4QcCoR7CQk8RQAVvej1BHj+ckWwFN1pK0JIJmDRzQF8lADVv\\nIqtlj0pbzHOxDUpBAM24IgNMlQKBgQDMT+ekK6o5i9+49xNtF24Bt87DaKu7xqcN\\n4bA1mXwPaKqx7Rhj/Od9hDV+6svt9treBlI4AtGLpbL7oZParhplS5izj7qwEi/M\\nEpSUvOFoHpO4Hb6Uok7xhx9kyAJBhWCcTcEMQ/ew41YmpRcvCxF0r4O8o5FgkAeb\\nZ9gsOwC6xwKBgDizrvE6raUZa+AflSwkGUkhKdcfaAx6iXldm9i8itVwFMZfyQPH\\np0p/fRX11yDL2ZX6vHipf+bGeW0zDwRZlvoFICCkNy3xhTkibcgruQU0bRNLwOlN\\noSVBbqd7tR5DeQ583LK814lxlrBFJ5kTfjYEaWOSOW/tn7xoTUjEZS8xAoGAG/xh\\n/XHhuko3le16IrpP3jpgPxIKXAlE/rjIWz8v6ChtITwZ2DBfQSkn7r+YuXrT1g/F\\nmViBfYBv+NnUF+M7SF7HhukMKGwFUg3Ffm407f8qOtEQNunYqGra2QIwlOsBJcfc\\nxqJUvk0VkuuQNmhstrAH+oHpOvHfqODbkotueScCgYEA4UAk1dE/f4OSlV7IIGj6\\nhvBaywOffmtZDl6ksu+HqXPP6ROvYmX4B0FdrmxA0qfachU/q6xi7GKafwPv1kiZ\\nIV1iFJQeyvgmglwqRc7RmxdvueVufuJ4JpAgdbRrkiKZ7PItjAQbjCg7YFxPxIzH\\nCTuBeDddhA24grbVVpKtLEI=\\n-----END PRIVATE KEY-----\",\n            \"verifyClientMode\": \"off\",\n            \"mappings\": [\n                {\n                    \"inputUri\": \"{app}/\",\n                    \"appName\": \"{app}\",\n                    \"appUri\": \"/\"\n                }\n            ]\n        }\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/cloudhub/api/organizations/:orgId/vpcs/:vpc/loadbalancers/:dlbid",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cloudhub",
+								"api",
+								"organizations",
+								":orgId",
+								"vpcs",
+								":vpc",
+								"loadbalancers",
+								":dlbid"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "vpc",
+									"value": "{{vpc_id}}"
+								},
+								{
+									"key": "dlbid",
+									"value": "{{dlb_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete DLB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.expect(pm.response.code).to.eql(204);",
+									"});",
+									"",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    pm.environment.set('dlb_id', undefined)",
+									"} else {",
+									"    return",
+									"}",
+									"",
+									"const sleep = 9000",
+									"const url = pm.environment.get(\"url\")",
+									"const org_id = pm.environment.get(\"organization_id\")",
+									"const token = pm.environment.get(\"anypoint_access_token\")",
+									"const vpc_id = pm.environment.get(\"vpc_id\")",
+									"",
+									"",
+									"pm.test(`Waiting ${sleep}ms before removing vpc`, () => {",
+									"    pm.expect(true).to.eql(true);",
+									"});",
+									"setTimeout(() => {",
+									"    pm.test(`Started delete vpc operation`, () => {",
+									"        pm.expect(true).to.eql(true);",
+									"    });",
+									"    pm.sendRequest({",
+									"        url:  `${url}/cloudhub/api/organizations/${org_id}/vpcs/${vpc_id}`,",
+									"        method: 'DELETE',",
+									"        header: {",
+									"            'Authorization': `Bearer ${token}`,",
+									"        }",
+									"    }, (err, res) => {",
+									"        pm.test('no error when deleting the vpc', () => {",
+									"            pm.expect(err).to.not.be.an('error');",
+									"            pm.expect(res.code).to.be.eql(204)",
+									"        })",
+									"        if (err) {",
+									"            console.error(err);",
+									"        } else if (res.code >= 200 && res.code < 400) {",
+									"            pm.environment.set('vpc_id', undefined)",
+									"        }",
+									"    });",
+									"}, sleep);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"vpc id not empty\", () => {",
+									"    const vpc_id = pm.environment.get(\"vpc_id\");",
+									"    pm.expect(vpc_id).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"dlb id not empty\", () => {",
+									"    const dlb_id = pm.environment.get(\"dlb_id\");",
+									"    pm.expect(dlb_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/cloudhub/api/organizations/:orgId/vpcs/:vpc/loadbalancers/:dlbid",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cloudhub",
+								"api",
+								"organizations",
+								":orgId",
+								"vpcs",
+								":vpc",
+								"loadbalancers",
+								":dlbid"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "vpc",
+									"value": "{{vpc_id}}"
+								},
+								{
+									"key": "dlbid",
+									"value": "{{dlb_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"org id not empty\", () => {",
+							"    const org_id = pm.environment.get(\"organization_id\");",
+							"    pm.expect(org_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"access token not empty\", () => {",
+							"    const token = pm.environment.get(\"anypoint_access_token\");",
+							"    pm.expect(token).to.not.be.empty;",
+							"});",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "RoleGroups",
+			"item": [
+				{
+					"name": "rolegroups",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:org-id/rolegroups",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":org-id",
+								"rolegroups"
+							],
+							"variable": [
+								{
+									"key": "org-id",
+									"value": "{{organization_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "rolegroup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(201);",
+									"    pm.expect(responseJson).to.be.an('object');",
+									"    pm.expect(responseJson.role_group_id).to.be.a('string');",
+									"});",
+									"",
+									"if(pm.response.code >= 200 && pm.response.code < 400) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('rolegroup_id', responseJson.role_group_id)",
+									"}",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"simulation_rg_{{$timestamp}}\",\n  \"description\": \"Simulation for rolegroup done at {{$timestamp}}\",\n  \"external_names\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:org-id/rolegroups",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":org-id",
+								"rolegroups"
+							],
+							"variable": [
+								{
+									"key": "org-id",
+									"value": "{{organization_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "rolegroup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"role_id\": \"6db86c8c-535c-45e4-b7d7-45049c39b69b\",\n  \"name\": \"Zoo Keeper\",\n  \"description\": \"Role for the person in charge of taking care of animals\",\n  \"internal\": true,\n  \"namespaces\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:org-id/rolegroups/:rolegroup-id",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":org-id",
+								"rolegroups",
+								":rolegroup-id"
+							],
+							"variable": [
+								{
+									"key": "org-id",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "rolegroup-id",
+									"value": "{{rolegroup_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "rolegroup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"simulation_rg_{{$timestamp}}_updated\",\n  \"description\": \"updated at {{$timestamp}}\",\n  \"external_names\": [\"SIM_RG_{{$timestamp}}\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:org-id/rolegroups/:rolegroup-id",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":org-id",
+								"rolegroups",
+								":rolegroup-id"
+							],
+							"variable": [
+								{
+									"key": "org-id",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "rolegroup-id",
+									"value": "{{rolegroup_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "rolegroup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"});",
+									"",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    pm.environment.set('rolegroup_id', undefined)",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:org-id/rolegroups/:rolegroup-id",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":org-id",
+								"rolegroups",
+								":rolegroup-id"
+							],
+							"variable": [
+								{
+									"key": "org-id",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "rolegroup-id",
+									"value": "{{rolegroup_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"org id not empty\", () => {",
+							"    const org_id = pm.environment.get(\"organization_id\");",
+							"    pm.expect(org_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"access token not empty\", () => {",
+							"    const token = pm.environment.get(\"anypoint_access_token\");",
+							"    pm.expect(token).to.not.be.empty;",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Role",
+			"item": [
+				{
+					"name": "roles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson.data).to.be.an('array')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/api/roles?include_internal=true&search&offset=0&limit=200&ascending=true",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Access Controls Viewer",
+									"description": "The name of a role",
+									"disabled": true
+								},
+								{
+									"key": "description",
+									"value": null,
+									"description": "The description of a role",
+									"disabled": true
+								},
+								{
+									"key": "include_internal",
+									"value": "true",
+									"description": "Include internal roles"
+								},
+								{
+									"key": "search",
+									"value": null,
+									"description": "A search string to use for partial matches of role names"
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "Pagination parameter to start returning results from this position of matches"
+								},
+								{
+									"key": "limit",
+									"value": "200",
+									"description": "Pagination parameter for how many results to return"
+								},
+								{
+									"key": "ascending",
+									"value": "true",
+									"description": "Sort order for filtering"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "rolegroups role",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const rolegroup_id = pm.environment.get(\"rolegroup_id\");",
+									"",
+									"if(rolegroup_id) {",
+									"    return",
+									"}",
+									"",
+									"const ts = (new Date()).getTime()",
+									"const url = pm.environment.get(\"url\")",
+									"const org_id = pm.environment.get(\"organization_id\")",
+									"const token = pm.environment.get(\"anypoint_access_token\")",
+									"",
+									"pm.sendRequest({",
+									"    url:  `${url}/accounts/api/organizations/${org_id}/rolegroups`,",
+									"    method: 'POST',",
+									"    header: {",
+									"        'Authorization': `Bearer ${token}`,",
+									"        'Content-Type': 'application/json' ",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            name: `simulation_rg_${ts}`,",
+									"            description: `Simulation for rolegroup done at ${ts}`,",
+									"            external_names: []",
+									"        })",
+									"    }",
+									"}, (err, res) => {",
+									"    pm.test('no error when creating the rolegroup', () => {",
+									"        pm.expect(err).to.not.be.an('error');",
+									"    })",
+									"    if (err) {",
+									"        console.error('Error while creating rolegroup:', err);",
+									"        return;",
+									"    }",
+									"    const responseJson = res.json();",
+									"    pm.test(\"valid rolegroup body\", () => {",
+									"        const json = res.json();",
+									"        pm.expect(json.role_group_id).not.to.be.undefined; ",
+									"    });",
+									"    if(responseJson.role_group_id) {",
+									"        pm.environment.set('rolegroup_id', responseJson.role_group_id)",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson).to.be.an(\"array\");",
+									"    pm.expect(responseJson).to.not.be.empty;",
+									"});",
+									"",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set(\"role_group_assignment_id\", responseJson[0].role_group_assignment_id)",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"context_params\": {\n            \"org\": \"{{organization_id}}\"\n        },\n        \"role_id\": \"{{role_id}}\"\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:org-id/rolegroups/:rolegroup-id/roles",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":org-id",
+								"rolegroups",
+								":rolegroup-id",
+								"roles"
+							],
+							"variable": [
+								{
+									"key": "org-id",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "rolegroup-id",
+									"value": "{{rolegroup_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "rolegroups roles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:org-id/rolegroups/:rolegroup-id/roles",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":org-id",
+								"rolegroups",
+								":rolegroup-id",
+								"roles"
+							],
+							"query": [
+								{
+									"value": null,
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "org-id",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "rolegroup-id",
+									"value": "{{rolegroup_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "rolegroups role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"});",
+									"",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    pm.environment.set('role_id', undefined)",
+									"} else {",
+									"    return",
+									"}",
+									"",
+									"const sleep = 500",
+									"const url = pm.environment.get(\"url\")",
+									"const org_id = pm.environment.get(\"organization_id\")",
+									"const token = pm.environment.get(\"anypoint_access_token\")",
+									"const rolegroup_id = pm.environment.get(\"rolegroup_id\")",
+									"",
+									"",
+									"pm.test(`Waiting ${sleep}ms before removing rolegroup`, () => {",
+									"    pm.expect(true).to.eql(true);",
+									"});",
+									"setTimeout(() => {",
+									"    pm.test(`Started delete rolegroup operation`, () => {",
+									"        pm.expect(true).to.eql(true);",
+									"    });",
+									"    pm.sendRequest({",
+									"        url:  `${url}/accounts/api/organizations/${org_id}/rolegroups/${rolegroup_id}`,",
+									"        method: 'DELETE',",
+									"        header: {",
+									"            'Authorization': `Bearer ${token}`,",
+									"        }",
+									"    }, (err, res) => {",
+									"        pm.test('no error when deleting the rolegroup', () => {",
+									"            pm.expect(err).to.not.be.an('error');",
+									"            pm.expect(res.code).to.be.eql(200)",
+									"        })",
+									"        if (err) {",
+									"            console.error(err);",
+									"        } else if (res.code >= 200 && res.code < 400) {",
+									"            pm.environment.set('rolegroup_id', undefined)",
+									"        }",
+									"    });",
+									"}, sleep);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"role_group_assignment_id not empty\", () => {",
+									"    const role_group_assignment_id = pm.environment.get('role_group_assignment_id')",
+									"    pm.expect(role_group_assignment_id).to.be.not.undefined || pm.expect(role_group_assignment_id).to.be.not.null || pm.expect(role_group_assignment_id).to.be.not.empty",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"context_params\": {\n            \"org\": \"{{organization_id}}\"\n        },\n        \"role_group_assignment_id\": \"{{role_group_assignment_id}}\",\n        \"role_group_id\": \"{{rolegroup_id}}\",\n        \"role_id\": \"{{role_id}}\"\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:org-id/rolegroups/:rolegroup-id/roles",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":org-id",
+								"rolegroups",
+								":rolegroup-id",
+								"roles"
+							],
+							"variable": [
+								{
+									"key": "org-id",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "rolegroup-id",
+									"value": "{{rolegroup_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"org id not empty\", () => {",
+							"    const org_id = pm.environment.get(\"organization_id\");",
+							"    pm.expect(org_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"access token not empty\", () => {",
+							"    const token = pm.environment.get(\"anypoint_access_token\");",
+							"    pm.expect(token).to.not.be.empty;",
+							"});",
+							"",
+							"pm.environment.set('role_id', \"42ea6892-f95c-4d1b-ab48-687b1f6632fc\")"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "get Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson.data).to.be.an('array')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/users?type=all&offset=0&limit=200",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"users"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "all",
+									"description": "specify the type of the user you want to retrive [all, host, proxy]"
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "The number of records to omit from the response."
+								},
+								{
+									"key": "limit",
+									"value": "200",
+									"description": "Maximum records to retrieve per request. default 25, min 0, max 500"
+								}
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(201);",
+									"    pm.expect(responseJson).to.be.an(\"object\")",
+									"    pm.expect(responseJson.id).to.not.be.empty",
+									"});",
+									"",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set(\"user_id\", responseJson.id)",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"usersim_{{$timestamp}}\",\n  \"firstName\" : \"Max\",\n  \"lastName\" : \"The Mule\",\n  \"email\" : \"max_the_mule@example.com\",\n  \"phoneNumber\" : \"111-111-1111\",\n  \"password\": \"u@k7jGDQ$C8n4m\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"users"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get User by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson).to.be.an('object')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"user id not empty\", () => {",
+									"    const user_id = pm.environment.get(\"user_id\");",
+									"    pm.expect(user_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/users/:userId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"users",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "userId",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update Single User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"user id not empty\", () => {",
+									"    const user_id = pm.environment.get(\"user_id\");",
+									"    pm.expect(user_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson).to.be.an('object')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\" : \"Max\",\n  \"lastName\" : \"The Mule\",\n  \"email\" : \"maxthemule@example.com\",\n  \"phoneNumber\" : \"111-111-1111\",\n  \"password\": \"u@k7jGDQ$C8n4m\",\n  \"enabled\": true,\n  \"properties\" : {\n    \"cs_auth\" :{\n        \"town\": \"here\"\n    }\n  }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/users/:userId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"users",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "userId",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete Single User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"user id not empty\", () => {",
+									"    const user_id = pm.environment.get(\"user_id\");",
+									"    pm.expect(user_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.expect(pm.response.code).to.eql(204);",
+									"});",
+									"",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    pm.environment.set(\"user_id\", undefined)",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/users/:userId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"users",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "userId",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"org id not empty\", () => {",
+							"    const org_id = pm.environment.get(\"organization_id\");",
+							"    pm.expect(org_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"access token not empty\", () => {",
+							"    const token = pm.environment.get(\"anypoint_access_token\");",
+							"    pm.expect(token).to.not.be.empty;",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "User Rolegroup",
+			"item": [
+				{
+					"name": "User Rolegroups",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const user_id = pm.environment.get('user_id')",
+									"",
+									"if (user_id) {",
+									"    return",
+									"}",
+									"",
+									"const ts = (new Date()).getTime()",
+									"const url = pm.environment.get(\"url\")",
+									"const org_id = pm.environment.get(\"organization_id\")",
+									"const token = pm.environment.get(\"anypoint_access_token\")",
+									"",
+									"pm.sendRequest({",
+									"    url:  `${url}/accounts/api/organizations/${org_id}/users`,",
+									"    method: 'POST',",
+									"    header: {",
+									"        'Authorization': `Bearer ${token}`,",
+									"        'Content-Type': 'application/json' ",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            username: `usersim_${ts}`,",
+									"            firstName : \"Max\",",
+									"            lastName : \"The Mule\",",
+									"            email : \"max_the_mule@example.com\",",
+									"            phoneNumber : \"111-111-1111\",",
+									"            password: \"u@k7jGDQ$C8n4m\"",
+									"        })",
+									"    }",
+									"}, (err, res) => {",
+									"    pm.test('no error when creating the user', () => {",
+									"        pm.expect(err).to.not.be.an('error');",
+									"        pm.expect(res.code).to.be.eqls(201);",
+									"        const json = res.json();",
+									"        pm.expect(json.id).not.to.be.undefined; ",
+									"    })",
+									"    if (err) {",
+									"        console.error('Error while creating user:', err);",
+									"        return;",
+									"    }",
+									"    const responseJson = res.json();",
+									"    if(responseJson.id) {",
+									"        pm.environment.set('user_id', responseJson.id)",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson.data).to.be.an('array')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/users/:userid/rolegroups?limit=200&offset=0",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"users",
+								":userid",
+								"rolegroups"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "200",
+									"description": "Pagination parameter for how many results to return"
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "Pagination parameter to start returning results from this position of matches"
+								}
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "userid",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User Rolegroup",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"user id not empty\", () => {",
+									"    const user_id = pm.environment.get(\"user_id\");",
+									"    pm.expect(user_id).to.not.be.empty;",
+									"});",
+									"const rolegroup_id = pm.environment.get('rolegroup_id')",
+									"",
+									"if (rolegroup_id) {",
+									"    return",
+									"}",
+									"",
+									"const ts = (new Date()).getTime()",
+									"const url = pm.environment.get(\"url\")",
+									"const org_id = pm.environment.get(\"organization_id\")",
+									"const token = pm.environment.get(\"anypoint_access_token\")",
+									"",
+									"pm.sendRequest({",
+									"    url:  `${url}/accounts/api/organizations/${org_id}/rolegroups`,",
+									"    method: 'POST',",
+									"    header: {",
+									"        'Authorization': `Bearer ${token}`,",
+									"        'Content-Type': 'application/json' ",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            name: `simulation_rg_${ts}`,",
+									"            description: `Simulation for rolegroup done at ${ts}`,",
+									"            external_names: []",
+									"        })",
+									"    }",
+									"}, (err, res) => {",
+									"    pm.test('no error when creating the rolegroup', () => {",
+									"        pm.expect(err).to.not.be.an('error');",
+									"        pm.expect(res.code).to.be.eqls(201);",
+									"        const json = res.json();",
+									"        pm.expect(json.role_group_id).not.to.be.undefined;",
+									"    })",
+									"    if (err) {",
+									"        console.error('Error while creating rolegroup:', err);",
+									"        return;",
+									"    }",
+									"    const responseJson = res.json();",
+									"    if(responseJson.role_group_id) {",
+									"        pm.environment.set('rolegroup_id', responseJson.role_group_id)",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/users/:userid/rolegroups/:rolegroupid",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"users",
+								":userid",
+								"rolegroups",
+								":rolegroupid"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "userid",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "rolegroupid",
+									"value": "{{rolegroup_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User Rolegroup",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"user id not empty\", () => {",
+									"    const user_id = pm.environment.get(\"user_id\");",
+									"    pm.expect(user_id).to.not.be.empty;",
+									"});",
+									"",
+									"",
+									"pm.test(\"rolegroup id not empty\", () => {",
+									"    const rolegroup_id = pm.environment.get(\"rolegroup_id\");",
+									"    pm.expect(rolegroup_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"});",
+									"",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    ",
+									"    const url = pm.environment.get(\"url\")",
+									"    const org_id = pm.environment.get(\"organization_id\")",
+									"    const token = pm.environment.get(\"anypoint_access_token\")",
+									"    const user_id = pm.environment.get(\"user_id\")",
+									"    const rolegroup_id = pm.environment.get(\"rolegroup_id\")",
+									"",
+									"    if (rolegroup_id) {",
+									"        pm.test(`Started delete rolegroup operation`, () => {",
+									"            pm.expect(true).to.eql(true);",
+									"        });",
+									"        pm.sendRequest({",
+									"            url: `${url}/accounts/api/organizations/${org_id}/rolegroups/${rolegroup_id}`,",
+									"            method: 'DELETE',",
+									"            header: {",
+									"                'Authorization': `Bearer ${token}`,",
+									"            }",
+									"        }, (err, res) => {",
+									"            pm.test('no error when deleting the rolegroup', () => {",
+									"                pm.expect(err).to.not.be.an('error');",
+									"                pm.expect(res.code).to.be.eql(200)",
+									"            })",
+									"            if (err) {",
+									"                console.error(err);",
+									"            } else if (res.code >= 200 && res.code < 400) {",
+									"                pm.environment.set('rolegroup_id', undefined)",
+									"            }",
+									"        });",
+									"    }",
+									"",
+									"    if (user_id) {",
+									"        pm.test(`Started delete user operation`, () => {",
+									"            pm.expect(true).to.eql(true);",
+									"        });",
+									"        pm.sendRequest({",
+									"            url: `${url}/accounts/api/organizations/${org_id}/users/${user_id}`,",
+									"            method: 'DELETE',",
+									"            header: {",
+									"                'Authorization': `Bearer ${token}`,",
+									"            }",
+									"        }, (err, res) => {",
+									"            pm.test('no error when deleting the user', () => {",
+									"                pm.expect(err).to.not.be.an('error');",
+									"                pm.expect(res.code).to.be.eql(204)",
+									"            })",
+									"            if (err) {",
+									"                console.error(err);",
+									"            } else if (res.code >= 200 && res.code < 400) {",
+									"                pm.environment.set('user_id', undefined)",
+									"            }",
+									"        });",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/users/:userid/rolegroups/:rolegroupid",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"users",
+								":userid",
+								"rolegroups",
+								":rolegroupid"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "userid",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "rolegroupid",
+									"value": "{{rolegroup_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"org id not empty\", () => {",
+							"    const org_id = pm.environment.get(\"organization_id\");",
+							"    pm.expect(org_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"access token not empty\", () => {",
+							"    const token = pm.environment.get(\"anypoint_access_token\");",
+							"    pm.expect(token).to.not.be.empty;",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Teams",
+			"item": [
+				{
+					"name": "get teams",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson.data).to.be.an('array')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams?offset=0&limit=250&ascending=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams"
+							],
+							"query": [
+								{
+									"key": "ancestor_team_id",
+									"value": "",
+									"description": "[Array or String] team_id that must appear in the team's ancestor_team_ids.",
+									"disabled": true
+								},
+								{
+									"key": "parent_team_id",
+									"value": null,
+									"description": "[Array or String] team_id of the immediate parent of the team to return.",
+									"disabled": true
+								},
+								{
+									"key": "team_id",
+									"value": null,
+									"description": "id of the team to return.",
+									"disabled": true
+								},
+								{
+									"key": "team_type",
+									"value": null,
+									"description": "return only teams that are of this type",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": null,
+									"description": "A search string to use for case-insensitive partial matches on team name",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "The number of records to omit from the response."
+								},
+								{
+									"key": "limit",
+									"value": "250",
+									"description": "Maximum records to retrieve per request. \nDefault: 25\nMin: 0 \nMax: 500 "
+								},
+								{
+									"key": "sort",
+									"value": null,
+									"description": "The field to sort on.\nDefault value: team_name\nEnum values:  team_name, created_at, team_id",
+									"disabled": true
+								},
+								{
+									"key": "ascending",
+									"value": "1",
+									"description": "Whether to sort ascending or descending.\nDefault value: true"
+								}
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create team",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(201);",
+									"    pm.expect(responseJson).to.be.an('object')",
+									"    pm.expect(responseJson.team_id).to.be.a('string')",
+									"});",
+									"",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set(\"team_id\", responseJson.team_id)",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"parent_team_id\": \"{{root_team_id}}\",\n  \"team_name\": \"Simulation_Team_{{$timestamp}}\",\n  \"team_type\": \"internal\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get team by id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"team id not empty\", () => {",
+									"    const team_id = pm.environment.get(\"team_id\");",
+									"    pm.expect(team_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson).to.be.an('object')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams/:teamId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams",
+								":teamId"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "teamId",
+									"value": "{{team_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update team",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"team id not empty\", () => {",
+									"    const team_id = pm.environment.get(\"team_id\");",
+									"    pm.expect(team_id).to.not.be.empty;",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(201);",
+									"    pm.expect(responseJson).to.be.an('object')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"team_name\": \"Simulation_Team_{{$timestamp}}\",\n  \"team_type\": \"internal\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams/:teamId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams",
+								":teamId"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "teamId",
+									"value": "{{team_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "move team",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"team id not empty\", () => {",
+									"    const team_id = pm.environment.get(\"team_id\");",
+									"    pm.expect(team_id).to.not.be.empty;",
+									"});",
+									"",
+									"const new_parent_team_id = pm.environment.get('new_parent_team_id')",
+									"",
+									"if (new_parent_team_id) {",
+									"    return",
+									"}",
+									"",
+									"const ts = (new Date()).getTime()",
+									"const url = pm.environment.get(\"url\")",
+									"const org_id = pm.environment.get(\"organization_id\")",
+									"const token = pm.environment.get(\"anypoint_access_token\")",
+									"const root_team_id = pm.environment.get(\"root_team_id\")",
+									"",
+									"pm.sendRequest({",
+									"    url:  `${url}/accounts/api/organizations/${org_id}/teams`,",
+									"    method: 'POST',",
+									"    header: {",
+									"        'Authorization': `Bearer ${token}`,",
+									"        'Content-Type': 'application/json' ",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            parent_team_id: root_team_id,",
+									"            team_name: `Simulation_Team_${ts}`,",
+									"            team_type: \"internal\"",
+									"        })",
+									"    }",
+									"}, (err, res) => {",
+									"    pm.test('no error when creating the new parent team', () => {",
+									"        pm.expect(err).to.not.be.an('error');",
+									"        pm.expect(res.code).to.be.eqls(201)",
+									"    })",
+									"    if (err) {",
+									"        console.error('Error while creating new parent team:', err);",
+									"        return;",
+									"    }",
+									"    const responseJson = res.json();",
+									"    pm.test(\"valid new parent team body\", () => {",
+									"        const json = res.json();",
+									"        pm.expect(json.team_id).not.to.be.undefined; ",
+									"    });",
+									"    if(responseJson.team_id) {",
+									"        pm.environment.set('new_parent_team_id', responseJson.team_id)",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(201);",
+									"    pm.expect(responseJson).to.be.an('object')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"parent_team_id\": \"{{new_parent_team_id}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams/:teamId/parent",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams",
+								":teamId",
+								"parent"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "teamId",
+									"value": "{{team_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete team",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"team id not empty\", () => {",
+									"    const team_id = pm.environment.get(\"team_id\");",
+									"    pm.expect(team_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.expect(pm.response.code).to.eql(204);",
+									"});",
+									"",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    pm.environment.set(\"team_id\", undefined)",
+									"",
+									"    const new_parent_team_id = pm.environment.get('new_parent_team_id')",
+									"",
+									"    if (!new_parent_team_id) {",
+									"        return",
+									"    }",
+									"",
+									"    const url = pm.environment.get(\"url\")",
+									"    const org_id = pm.environment.get(\"organization_id\")",
+									"    const token = pm.environment.get(\"anypoint_access_token\")",
+									"",
+									"    pm.sendRequest({",
+									"        url:  `${url}/accounts/api/organizations/${org_id}/teams/${new_parent_team_id}`,",
+									"        method: 'DELETE',",
+									"        header: {",
+									"            'Authorization': `Bearer ${token}`",
+									"        }",
+									"    }, (err, res) => {",
+									"        pm.test('no error when deleting the simulated parent team', () => {",
+									"            pm.expect(err).to.not.be.an('error');",
+									"            pm.expect(res.code).to.be.eqls(204)",
+									"        })",
+									"        if (err) {",
+									"            console.error('Error while deleting simulated parent team:', err);",
+									"        } else if(res.code >= 200 && res.code < 400) {",
+									"            pm.environment.set('new_parent_team_id', undefined)",
+									"        }",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams/:teamId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams",
+								":teamId"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "teamId",
+									"value": "{{team_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"org id not empty\", () => {",
+							"    const org_id = pm.environment.get(\"organization_id\");",
+							"    pm.expect(org_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"root team id not empty\", () => {",
+							"    const root_team_id = pm.environment.get(\"root_team_id\");",
+							"    pm.expect(root_team_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"access token not empty\", () => {",
+							"    const token = pm.environment.get(\"anypoint_access_token\");",
+							"    pm.expect(token).to.not.be.empty;",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Team groupmappings",
+			"item": [
+				{
+					"name": "put groupmappings",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const team_id = pm.environment.get('team_id')",
+									"",
+									"if (team_id) {",
+									"    return",
+									"}",
+									"",
+									"const ts = (new Date()).getTime()",
+									"const url = pm.environment.get(\"url\")",
+									"const org_id = pm.environment.get(\"organization_id\")",
+									"const token = pm.environment.get(\"anypoint_access_token\")",
+									"const root_team_id = pm.environment.get(\"root_team_id\")",
+									"",
+									"pm.sendRequest({",
+									"    url:  `${url}/accounts/api/organizations/${org_id}/teams`,",
+									"    method: 'POST',",
+									"    header: {",
+									"        'Authorization': `Bearer ${token}`,",
+									"        'Content-Type': 'application/json' ",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify({",
+									"            parent_team_id: root_team_id,",
+									"            team_name: `Simulation_Team_${ts}`,",
+									"            team_type: \"internal\"",
+									"        })",
+									"    }",
+									"}, (err, res) => {",
+									"    pm.test('no error when creating the team', () => {",
+									"        pm.expect(err).to.not.be.an('error');",
+									"        pm.expect(res.code).to.be.eqls(201);",
+									"        const json = res.json();",
+									"        pm.expect(json.team_id).not.to.be.undefined;",
+									"    })",
+									"    if (err) {",
+									"        console.error('Error while creating new team:', err);",
+									"        return;",
+									"    }",
+									"    const responseJson = res.json();",
+									"    if(responseJson.team_id) {",
+									"        pm.environment.set('team_id', responseJson.team_id)",
+									"    }",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.expect(pm.response.code).to.eql(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"external_group_name\": \"simulation_group1\",\n    \"membership_type\": \"maintainer\"\n  },\n  {\n    \"external_group_name\": \"simulation_group2\",\n    \"membership_type\": \"maintainer\"\n  }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams/:teamId/groupmappings",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams",
+								":teamId",
+								"groupmappings"
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "teamId",
+									"value": "{{team_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get groupmappings",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"team id not empty\", () => {",
+									"    const team_id = pm.environment.get(\"team_id\");",
+									"    pm.expect(team_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson).to.be.an('object')",
+									"    pm.expect(responseJson.data).to.be.an('array')",
+									"});",
+									"",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    const team_id = pm.environment.get('team_id')",
+									"",
+									"    if (!team_id) {",
+									"        return",
+									"    }",
+									"",
+									"    const url = pm.environment.get(\"url\")",
+									"    const org_id = pm.environment.get(\"organization_id\")",
+									"    const token = pm.environment.get(\"anypoint_access_token\")",
+									"",
+									"    pm.sendRequest({",
+									"        url:  `${url}/accounts/api/organizations/${org_id}/teams/${team_id}`,",
+									"        method: 'DELETE',",
+									"        header: {",
+									"            'Authorization': `Bearer ${token}`",
+									"        }",
+									"    }, (err, res) => {",
+									"        pm.test('no error when deleting the simulated team', () => {",
+									"            pm.expect(err).to.not.be.an('error');",
+									"            pm.expect(res.code).to.be.eqls(204)",
+									"        })",
+									"        if (err) {",
+									"            console.error('Error while deleting simulated team:', err);",
+									"        } else if(res.code >= 200 && res.code < 400) {",
+									"            pm.environment.set('team_id', undefined)",
+									"        }",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams/:teamId/groupmappings?offset=0&limit=250",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams",
+								":teamId",
+								"groupmappings"
+							],
+							"query": [
+								{
+									"key": "membership_type",
+									"value": "",
+									"description": "Include the group access mappings that grant the provided membership type By default, all group access mappings are returned",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "A search string to use for case-insensitive partial matches on external group name",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "The number of records to omit from the response.\nDefault value: 0\nMin value: 0"
+								},
+								{
+									"key": "limit",
+									"value": "250",
+									"description": "Maximum records to retrieve per request. \nDefault: 25\nMin: 0 \nMax: 500 "
+								}
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "teamId",
+									"value": "{{team_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"org id not empty\", () => {",
+							"    const org_id = pm.environment.get(\"organization_id\");",
+							"    pm.expect(org_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"root team id not empty\", () => {",
+							"    const root_team_id = pm.environment.get(\"root_team_id\");",
+							"    pm.expect(root_team_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"access token not empty\", () => {",
+							"    const token = pm.environment.get(\"anypoint_access_token\");",
+							"    pm.expect(token).to.not.be.empty;",
+							"});",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Team members",
+			"item": [
+				{
+					"name": "add member",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const team_id = pm.environment.get('team_id');",
+									"const user_id = pm.environment.get('user_id');",
+									"",
+									"const url = pm.environment.get(\"url\")",
+									"const org_id = pm.environment.get(\"organization_id\")",
+									"const token = pm.environment.get(\"anypoint_access_token\")",
+									"const root_team_id = pm.environment.get(\"root_team_id\")",
+									"",
+									"if (!team_id) {",
+									"    const ts = (new Date()).getTime()",
+									"    pm.sendRequest({",
+									"        url:  `${url}/accounts/api/organizations/${org_id}/teams`,",
+									"        method: 'POST',",
+									"        header: {",
+									"            'Authorization': `Bearer ${token}`,",
+									"            'Content-Type': 'application/json' ",
+									"        },",
+									"        body: {",
+									"            mode: 'raw',",
+									"            raw: JSON.stringify({",
+									"                parent_team_id: root_team_id,",
+									"                team_name: `Simulation_Team_${ts}`,",
+									"                team_type: \"internal\"",
+									"            })",
+									"        }",
+									"    }, (err, res) => {",
+									"        pm.test('no error when creating the team', () => {",
+									"            pm.expect(err).to.not.be.an('error');",
+									"            pm.expect(res.code).to.be.eqls(201);",
+									"            const json = res.json();",
+									"            pm.expect(json.team_id).not.to.be.undefined;",
+									"        })",
+									"        if (err) {",
+									"            console.error('Error while creating new team:', err);",
+									"            return;",
+									"        }",
+									"        const responseJson = res.json();",
+									"        if(responseJson.team_id) {",
+									"            pm.environment.set('team_id', responseJson.team_id)",
+									"        }",
+									"    });",
+									"}",
+									"",
+									"if (!user_id) {",
+									"    const ts = (new Date()).getTime()",
+									"    pm.sendRequest({",
+									"        url:  `${url}/accounts/api/organizations/${org_id}/users`,",
+									"        method: 'POST',",
+									"        header: {",
+									"            'Authorization': `Bearer ${token}`,",
+									"            'Content-Type': 'application/json' ",
+									"        },",
+									"        body: {",
+									"            mode: 'raw',",
+									"            raw: JSON.stringify({",
+									"                username: `usersim_${ts}`,",
+									"                firstName : \"Max\",",
+									"                lastName : \"The Mule\",",
+									"                email : \"max_the_mule@example.com\",",
+									"                phoneNumber : \"111-111-1111\",",
+									"                password: \"u@k7jGDQ$C8n4m\"",
+									"            })",
+									"        }",
+									"    }, (err, res) => {",
+									"        pm.test('no error when creating the user', () => { ",
+									"            pm.expect(err).to.not.be.an('error');",
+									"            pm.expect(res.code).to.be.eqls(201);",
+									"            const json = res.json();",
+									"            pm.expect(json.id).not.to.be.undefined; ",
+									"        })",
+									"        if (err) {",
+									"            console.error('Error while creating user:', err);",
+									"            return;",
+									"        }",
+									"        const responseJson = res.json();",
+									"        if(responseJson.id) {",
+									"            pm.environment.set('user_id', responseJson.id)",
+									"        }",
+									"    });",
+									"}",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.expect(pm.response.code).to.eql(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"membership_type\": \"member\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams/:teamId/members/:userId?offset=0&limit=250",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams",
+								":teamId",
+								"members",
+								":userId"
+							],
+							"query": [
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "The number of records to omit from the response.\nDefault value: 0\nMin value:0"
+								},
+								{
+									"key": "limit",
+									"value": "250",
+									"description": "Maximum records to retrieve per request.\nDefault value: 25\nMin value: 0\nMax value: 500"
+								}
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "teamId",
+									"value": "{{team_id}}"
+								},
+								{
+									"key": "userId",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get members",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"team id not empty\", () => {",
+									"    const team_id = pm.environment.get(\"team_id\");",
+									"    pm.expect(team_id).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"user id not empty\", () => {",
+									"    const user_id = pm.environment.get(\"user_id\");",
+									"    pm.expect(user_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson).to.be.an('object')",
+									"    pm.expect(responseJson.data).to.be.an('array')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams/:teamId/members?offset=0&limit=250&ascending=true",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams",
+								":teamId",
+								"members"
+							],
+							"query": [
+								{
+									"key": "membership_type",
+									"value": "",
+									"description": "Include the group access mappings that grant the provided membership type By default, all group access mappings are returned",
+									"disabled": true
+								},
+								{
+									"key": "identity_type",
+									"value": "",
+									"description": "A search string to use for case-insensitive partial matches on external group name",
+									"disabled": true
+								},
+								{
+									"key": "member_ids",
+									"value": "18f23771-c78a-4be2-af8f-1bae66f43942",
+									"description": "[Array or String] Include the members of the team that have ids in this list",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Maximum records to retrieve per request. \nDefault: 25\nMin: 0 \nMax: 500 ",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "The number of records to omit from the response.\nDefault value: 0\nMin value:0"
+								},
+								{
+									"key": "limit",
+									"value": "250",
+									"description": "Maximum records to retrieve per request.\nDefault value: 25\nMin value: 0\nMax value: 500"
+								},
+								{
+									"key": "sort",
+									"value": "",
+									"description": "The field to sort on.\nDefault value: identity_type\nEnum values: identity_type, name",
+									"disabled": true
+								},
+								{
+									"key": "ascending",
+									"value": "true",
+									"description": "Whether to sort ascending or descending"
+								}
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "teamId",
+									"value": "{{team_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete member",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"team id not empty\", () => {",
+									"    const team_id = pm.environment.get(\"team_id\");",
+									"    pm.expect(team_id).to.not.be.empty;",
+									"});",
+									"",
+									"pm.test(\"user id not empty\", () => {",
+									"    const user_id = pm.environment.get(\"user_id\");",
+									"    pm.expect(user_id).to.not.be.empty;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.expect(pm.response.code).to.eql(204);",
+									"});",
+									"",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    ",
+									"    const url = pm.environment.get(\"url\")",
+									"    const org_id = pm.environment.get(\"organization_id\")",
+									"    const token = pm.environment.get(\"anypoint_access_token\")",
+									"    const user_id = pm.environment.get(\"user_id\")",
+									"    const team_id = pm.environment.get(\"team_id\")",
+									"",
+									"    if (team_id) {",
+									"        pm.test(`Started delete team operation`, () => {",
+									"            pm.expect(true).to.eql(true);",
+									"        });",
+									"        pm.sendRequest({",
+									"            url:  `${url}/accounts/api/organizations/${org_id}/teams/${team_id}`,",
+									"            method: 'DELETE',",
+									"            header: {",
+									"                'Authorization': `Bearer ${token}`",
+									"            }",
+									"        }, (err, res) => {",
+									"            pm.test('no error when deleting the simulated team', () => {",
+									"                pm.expect(err).to.not.be.an('error');",
+									"                pm.expect(res.code).to.be.eqls(204)",
+									"            })",
+									"            if (err) {",
+									"                console.error('Error while deleting simulated team:', err);",
+									"            } else if(res.code >= 200 && res.code < 400) {",
+									"                pm.environment.set('team_id', undefined)",
+									"            }",
+									"        });",
+									"    }",
+									"    ",
+									"    if (user_id) {",
+									"        pm.test(`Started delete user operation`, () => {",
+									"            pm.expect(true).to.eql(true);",
+									"        });",
+									"        pm.sendRequest({",
+									"            url: `${url}/accounts/api/organizations/${org_id}/users/${user_id}`,",
+									"            method: 'DELETE',",
+									"            header: {",
+									"                'Authorization': `Bearer ${token}`,",
+									"            }",
+									"        }, (err, res) => {",
+									"            pm.test('no error when deleting the user', () => {",
+									"                pm.expect(err).to.not.be.an('error');",
+									"                pm.expect(res.code).to.be.eql(204)",
+									"            })",
+									"            if (err) {",
+									"                console.error(err);",
+									"            } else if (res.code >= 200 && res.code < 400) {",
+									"                pm.environment.set('user_id', undefined)",
+									"            }",
+									"        });",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams/:teamId/members/:userId",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams",
+								":teamId",
+								"members",
+								":userId"
+							],
+							"query": [
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "The number of records to omit from the response.\nDefault value: 0\nMin value:0",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "250",
+									"description": "Maximum records to retrieve per request.\nDefault value: 25\nMin value: 0\nMax value: 500",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "teamId",
+									"value": "{{team_id}}"
+								},
+								{
+									"key": "userId",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"org id not empty\", () => {",
+							"    const org_id = pm.environment.get(\"organization_id\");",
+							"    pm.expect(org_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"root team id not empty\", () => {",
+							"    const root_team_id = pm.environment.get(\"root_team_id\");",
+							"    pm.expect(root_team_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"access token not empty\", () => {",
+							"    const token = pm.environment.get(\"anypoint_access_token\");",
+							"    pm.expect(token).to.not.be.empty;",
+							"});",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Team roles",
+			"item": [
+				{
+					"name": "add roles",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const team_id = pm.environment.get('team_id');",
+									"",
+									"const url = pm.environment.get(\"url\")",
+									"const org_id = pm.environment.get(\"organization_id\")",
+									"const token = pm.environment.get(\"anypoint_access_token\")",
+									"const root_team_id = pm.environment.get(\"root_team_id\")",
+									"",
+									"if (!team_id) {",
+									"    const ts = (new Date()).getTime()",
+									"    pm.sendRequest({",
+									"        url:  `${url}/accounts/api/organizations/${org_id}/teams`,",
+									"        method: 'POST',",
+									"        header: {",
+									"            'Authorization': `Bearer ${token}`,",
+									"            'Content-Type': 'application/json' ",
+									"        },",
+									"        body: {",
+									"            mode: 'raw',",
+									"            raw: JSON.stringify({",
+									"                parent_team_id: root_team_id,",
+									"                team_name: `Simulation_Team_${ts}`,",
+									"                team_type: \"internal\"",
+									"            })",
+									"        }",
+									"    }, (err, res) => {",
+									"        pm.test('no error when creating the team', () => {",
+									"            pm.expect(err).to.not.be.an('error');",
+									"            pm.expect(res.code).to.be.eqls(201);",
+									"            const json = res.json();",
+									"            pm.expect(json.team_id).not.to.be.undefined;",
+									"        })",
+									"        if (err) {",
+									"            console.error('Error while creating new team:', err);",
+									"            return;",
+									"        }",
+									"        const responseJson = res.json();",
+									"        if(responseJson.team_id) {",
+									"            pm.environment.set('team_id', responseJson.team_id)",
+									"        }",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.expect(pm.response.code).to.eql(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"role_id\": \"{{role_id}}\",\n    \"context_params\": {\n      \"org\": \"{{organization_id}}\"\n    }\n  }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams/:teamId/roles?offset=0&limit=250",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams",
+								":teamId",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "The number of records to omit from the response.\nDefault value: 0\nMin value:0"
+								},
+								{
+									"key": "limit",
+									"value": "250",
+									"description": "Maximum records to retrieve per request.\nDefault value: 25\nMin value: 0\nMax value: 500"
+								}
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "teamId",
+									"value": "{{team_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get roles",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"team id not empty\", () => {",
+									"    const team_id = pm.environment.get(\"team_id\");",
+									"    pm.expect(team_id).to.not.be.empty;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson).to.be.an('object')",
+									"    pm.expect(responseJson.data).to.be.an('array')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams/:teamId/roles?offset=0&limit=200",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams",
+								":teamId",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "role_ids",
+									"value": "833ab9ca-0c72-45ba-9764-1df83240db57",
+									"description": "return only role assignments containing one of the supplied role_ids",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "nothing at all",
+									"description": "A search string to use for case-insensitive partial matches on role name",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "The number of records to omit from the response."
+								},
+								{
+									"key": "limit",
+									"value": "200",
+									"description": "Maximum records to retrieve per request. \nDefault: 25\nMin: 0 \nMax: 500 "
+								}
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "teamId",
+									"value": "{{team_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete roles",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.test(\"team id not empty\", () => {",
+									"    const team_id = pm.environment.get(\"team_id\");",
+									"    pm.expect(team_id).to.not.be.empty;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", () => {",
+									"    pm.expect(pm.response.code).to.eql(204);",
+									"});",
+									"",
+									"if (pm.response.code >= 200 && pm.response.code < 400) {",
+									"    ",
+									"    const url = pm.environment.get(\"url\")",
+									"    const org_id = pm.environment.get(\"organization_id\")",
+									"    const token = pm.environment.get(\"anypoint_access_token\")",
+									"    const team_id = pm.environment.get(\"team_id\")",
+									"",
+									"    if (team_id) {",
+									"        pm.test(`Started delete team operation`, () => {",
+									"            pm.expect(true).to.eql(true);",
+									"        });",
+									"        pm.sendRequest({",
+									"            url:  `${url}/accounts/api/organizations/${org_id}/teams/${team_id}`,",
+									"            method: 'DELETE',",
+									"            header: {",
+									"                'Authorization': `Bearer ${token}`",
+									"            }",
+									"        }, (err, res) => {",
+									"            pm.test('no error when deleting the simulated team', () => {",
+									"                pm.expect(err).to.not.be.an('error');",
+									"                pm.expect(res.code).to.be.eqls(204)",
+									"            })",
+									"            if (err) {",
+									"                console.error('Error while deleting simulated team:', err);",
+									"            } else if(res.code >= 200 && res.code < 400) {",
+									"                pm.environment.set('team_id', undefined)",
+									"            }",
+									"        });",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "XSRF-TOKEN",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"role_id\": \"{{role_id}}\",\n    \"context_params\": {\n      \"org\": \"{{organization_id}}\"\n    }\n  }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:orgId/teams/:teamId/roles",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":orgId",
+								"teams",
+								":teamId",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "The number of records to omit from the response.\nDefault value: 0\nMin value:0",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "250",
+									"description": "Maximum records to retrieve per request.\nDefault value: 25\nMin value: 0\nMax value: 500",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "orgId",
+									"value": "{{organization_id}}"
+								},
+								{
+									"key": "teamId",
+									"value": "{{team_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"org id not empty\", () => {",
+							"    const org_id = pm.environment.get(\"organization_id\");",
+							"    pm.expect(org_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"root team id not empty\", () => {",
+							"    const root_team_id = pm.environment.get(\"root_team_id\");",
+							"    pm.expect(root_team_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"access token not empty\", () => {",
+							"    const token = pm.environment.get(\"anypoint_access_token\");",
+							"    pm.expect(token).to.not.be.empty;",
+							"});",
+							"",
+							"pm.environment.set('role_id', \"42ea6892-f95c-4d1b-ab48-687b1f6632fc\")"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "IdentityProviders",
+			"item": [
+				{
+					"name": "Get IDPs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(responseJson).to.be.an('object')",
+									"    pm.expect(responseJson.data).to.be.an('array')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/accounts/api/organizations/:bg/identityProviders",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"accounts",
+								"api",
+								"organizations",
+								":bg",
+								"identityProviders"
+							],
+							"variable": [
+								{
+									"key": "bg",
+									"value": "{{organization_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"org id not empty\", () => {",
+							"    const org_id = pm.environment.get(\"organization_id\");",
+							"    pm.expect(org_id).to.not.be.empty;",
+							"});",
+							"",
+							"pm.test(\"access token not empty\", () => {",
+							"    const token = pm.environment.get(\"anypoint_access_token\");",
+							"    pm.expect(token).to.not.be.empty;",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{anypoint_access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"url not empty\", () => {",
+					"    const url = pm.environment.get(\"url\");",
+					"    pm.expect(url).to.not.be.empty;",
+					"});"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
