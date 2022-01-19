@@ -9,73 +9,6 @@
 			"name": "Authentication",
 			"item": [
 				{
-					"name": "get Connected App  token",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", () => {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(pm.response.code).to.eql(200);",
-									"    pm.expect(responseJson.access_token).to.be.not.empty;",
-									"});",
-									"",
-									"const responseJson = pm.response.json();",
-									"",
-									"pm.environment.set('anypoint_access_token', responseJson.access_token)",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.test(\"app credentials not empty\", () => {",
-									"    const client_id = pm.environment.get(\"app-client-id\");",
-									"    const client_secret = pm.environment.get(\"app-client-secret\");",
-									"    pm.expect(client_id).to.not.be.empty;",
-									"    pm.expect(client_secret).to.not.be.empty;",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{app-client-id}}\",\n  \"client_secret\": \"{{app-client-secret}}\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/accounts/api/v2/oauth2/token",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"accounts",
-								"api",
-								"v2",
-								"oauth2",
-								"token"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "User/Pwd login",
 					"event": [
 						{
@@ -91,7 +24,6 @@
 									"const responseJson = pm.response.json();",
 									"",
 									"pm.environment.set('anypoint_access_token', responseJson.access_token)",
-									"",
 									""
 								],
 								"type": "text/javascript"
@@ -189,9 +121,9 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", () => {",
+									"pm.test(\"Status code is 201\", () => {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(pm.response.code).to.eql(201);",
 									"    pm.expect(responseJson).to.be.an('object');",
 									"    pm.expect(responseJson.id).to.be.a('string');",
 									"});",
@@ -491,9 +423,9 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", () => {",
+									"pm.test(\"Status code is 201\", () => {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(pm.response.code).to.eql(201);",
 									"    pm.expect(responseJson).to.be.an('object');",
 									"    pm.expect(responseJson.id).to.be.a('string');",
 									"});",
@@ -689,8 +621,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 204\", () => {",
-									"    pm.expect(pm.response.code).to.eql(204);",
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
 									"});",
 									"if (pm.response.code >= 200 && pm.response.code < 400) {",
 									"    pm.environment.set('suborg_id', undefined)",
@@ -802,9 +734,9 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", () => {",
+									"pm.test(\"Status code is 201\", () => {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(pm.response.code).to.eql(200);",
+									"    pm.expect(pm.response.code).to.eql(201);",
 									"    pm.expect(responseJson.id).to.not.be.empty;",
 									"});",
 									"",
@@ -1124,7 +1056,7 @@
 									"}, (err, res) => {",
 									"    pm.test('no error when creating the vpc', () => {",
 									"        pm.expect(err).to.not.be.an('error');",
-									"        pm.expect(res.code).to.be.eqls(200);",
+									"        pm.expect(res.code).to.be.eqls(201);",
 									"        const json = res.json();",
 									"        pm.expect(json.id).not.to.be.undefined; ",
 									"    })",

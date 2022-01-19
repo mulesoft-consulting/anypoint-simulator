@@ -7,7 +7,7 @@ services:
     container_name: any-simulation
     restart: unless-stopped
     volumes:
-      - ./hoverfly:/var/hoverfly
+      - ./conf:/var/hoverfly
     ports: 
       - 8500:8500
       - 8888:8888
