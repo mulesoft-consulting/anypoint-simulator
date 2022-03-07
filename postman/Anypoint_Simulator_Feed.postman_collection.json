@@ -1606,21 +1606,9 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"role_id\": \"6db86c8c-535c-45e4-b7d7-45049c39b69b\",\n  \"name\": \"Zoo Keeper\",\n  \"description\": \"Role for the person in charge of taking care of animals\",\n  \"internal\": true,\n  \"namespaces\": []\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "{{url}}/accounts/api/organizations/:org-id/rolegroups/:rolegroup-id",
 							"host": [
